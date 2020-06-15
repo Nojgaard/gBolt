@@ -5,23 +5,23 @@
 
 namespace gbolt {
 
-void GBolt::execute() {
-  Database *database = Database::get_instance();
-  vector<Graph> graphs;
-  vector<Graph> prune_graphs;
+void GBolt::execute(const std::vector<Graph>& graphs) {
+//  Database *database = Database::get_instance();
+//  vector<Graph> graphs;
+//  vector<Graph> prune_graphs;
   // Phase 1: construct an initial graph
   #ifdef GBOLT_PERFORMANCE
   struct timeval time_start, time_end;
   double elapsed = 0.0;
   CPU_TIMER_START(elapsed, time_start);
   #endif
-  database->construct_graphs(graphs);
-  nsupport_ = graphs.size() * support_;
+//  database->construct_graphs(graphs);
+//  nsupport_ = graphs.size() * support_;
   // TODO: find frequent edges
   find_frequent_nodes_and_edges(graphs);
 
   // Phase 2: prune the initial graph by frequent labels
-  database->construct_graphs(frequent_vertex_labels_, frequent_edge_labels_, prune_graphs);
+//  database->construct_graphs(frequent_vertex_labels_, frequent_edge_labels_, prune_graphs);
   #ifdef GBOLT_PERFORMANCE
   CPU_TIMER_END(elapsed, time_start, time_end);
   LOG_INFO("gbolt construct graph time: %f", elapsed);
@@ -29,8 +29,8 @@ void GBolt::execute() {
   #endif
 
   // Phase 3: graph mining
-  init_instances(prune_graphs);
-  project(prune_graphs);
+  init_instances(graphs);
+  project(graphs);
   #ifdef GBOLT_PERFORMANCE
   CPU_TIMER_END(elapsed, time_start, time_end);
   LOG_INFO("gbolt mine graph time: %f", elapsed);
@@ -59,9 +59,9 @@ void GBolt::init_instances(const vector<Graph> &graphs) {
     #ifdef GBOLT_PERFORMANCE
     LOG_INFO("gbolt create thread %d", i);
     #endif
-    string output_file_thread = output_file_ + ".t" + std::to_string(i);
+//    string output_file_thread = output_file_ + ".t" + std::to_string(i);
     gbolt_instances_[i].history = new History(max_edges, max_vertice);
-    gbolt_instances_[i].output = new Output(output_file_thread);
+	gbolt_instances_[i].output = new Output();
     gbolt_instances_[i].min_graph = new Graph();
     gbolt_instances_[i].min_dfs_codes = new DfsCodes();
     gbolt_instances_[i].right_most_path = new Path<int>(DEFAULT_PATH_LEN);

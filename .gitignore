@@ -128,3 +128,4 @@ sftp-config.json
 
 ### CMake ##
 build/*
+CMakeLists.txt.user

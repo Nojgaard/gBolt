@@ -1,4 +1,6 @@
 #include <gbolt.h>
+#include <output.h>
+#include <graph.h>
 #include <database.h>
 #include <common.h>
 #include <cxxopts.hpp>
@@ -58,8 +60,13 @@ int main(int argc, char *argv[]) {
   CPU_TIMER_START(elapsed, time_start);
   #endif
   // Construct algorithm
-  gbolt::GBolt gbolt(output, support);
-  gbolt.execute();
+  std::vector<gbolt::Graph> graphs;
+  Database::get_instance()->construct_graphs(graphs);
+
+  int nsupport = graphs.size() * support;
+//  std::cout << "NSUPPORT: " << nsupport << std::endl;
+  gbolt::GBolt gbolt(nsupport);
+  gbolt.execute(graphs);
   #ifdef GBOLT_PERFORMANCE
   CPU_TIMER_END(elapsed, time_start, time_end);
   LOG_INFO("gbolt execute time: %f", elapsed);
@@ -69,7 +76,9 @@ int main(int argc, char *argv[]) {
     #ifdef GBOLT_PERFORMANCE
     CPU_TIMER_START(elapsed, time_start);
     #endif
-    gbolt.save(parents, dfs, nodes);
+	gbolt::Output out = gbolt.get_output();
+	std::cout << "Found " << out.size() << " graphs\n";
+	gbolt.save(output, parents, dfs, nodes);
     #ifdef GBOLT_PERFORMANCE
     CPU_TIMER_END(elapsed, time_start, time_end);
     LOG_INFO("gbolt save output time: %f", elapsed);

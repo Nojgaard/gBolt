@@ -3,6 +3,7 @@
 #include <path.h>
 #include <common.h>
 #include <sstream>
+#include <iostream>
 
 namespace gbolt {
 
@@ -42,70 +43,106 @@ void GBolt::find_frequent_nodes_and_edges(const vector<Graph> &graphs) {
 
 void GBolt::report(const DfsCodes &dfs_codes, const Projection &projection,
   int nsupport, int prev_thread_id, int prev_graph_id) {
-  std::stringstream ss;
   Graph graph;
   build_graph(dfs_codes, graph);
 
-  for (auto i = 0; i < graph.size(); ++i) {
-    const vertex_t *vertex = graph.get_p_vertex(i);
-    ss << "v " << vertex->id << " " << vertex->label << std::endl;
-  }
-  for (auto i = 0; i < dfs_codes.size(); ++i) {
-    ss << "e " << dfs_codes[i]->from << " " << dfs_codes[i]->to
-      << " " << dfs_codes[i]->edge_label << std::endl;
-  }
-  ss << "x: ";
-  int prev = 0;
-  for (auto i = 0; i < projection.size(); ++i) {
-    if (i == 0 || projection[i].id != prev) {
-      prev = projection[i].id;
-      ss << prev << " ";
-    }
-  }
-  ss << std::endl;
   #ifdef GBOLT_SERIAL
   gbolt_instance_t *instance = gbolt_instances_;
   #else
   gbolt_instance_t *instance = gbolt_instances_ + omp_get_thread_num();
   #endif
   Output *output = instance->output;
-  output->push_back(ss.str(), nsupport, output->size(), prev_thread_id, prev_graph_id);
+  output->push_back(dfs_codes, graph, projection,
+					nsupport, output->size(), prev_thread_id, prev_graph_id);
 }
 
-void GBolt::save(bool output_parent, bool output_pattern, bool output_frequent_nodes) {
+Output GBolt::get_output() {
+  #ifdef GBOLT_SERIAL
+  int num_threads = 1;
+  #else
+  int num_threads = omp_get_max_threads();
+  #endif
+
+  Output out;
+  for (auto i = 0; i < num_threads; ++i) {
+	  const gbolt_instance_t& instance = gbolt_instances_[i];
+	  out.push_back(*instance.output);
+  }
+  return out;
+}
+
+void GBolt::save(std::string output_file, bool output_parent, bool output_pattern, bool output_frequent_nodes) {
   #ifdef GBOLT_SERIAL
   Output *output = gbolt_instances_->output;
   output->save(output_parent, output_pattern);
   #else
   #pragma omp parallel
   {
-    gbolt_instance_t *instance = gbolt_instances_ + omp_get_thread_num();
-    Output *output = instance->output;
-    output->save(output_parent, output_pattern);
+	string output_file_thread = output_file + ".t" + std::to_string(omp_get_thread_num());
+	gbolt_instance_t *instance = gbolt_instances_ + omp_get_thread_num();
+	Output *output = instance->output;
+	output->save(output_file_thread, output_parent, output_pattern);
   }
   #endif
   // Save output for frequent nodes
-  if (output_frequent_nodes) {
-    string output_file_nodes = output_file_ + ".nodes";
-    output_frequent_nodes_ = new Output(output_file_nodes);
+//  if (output_frequent_nodes) {
+//    string output_file_nodes = output_file_ + ".nodes";
+//    output_frequent_nodes_ = new Output(output_file_nodes);
 
-    int graph_id = 0;
-    for (auto it = frequent_vertex_labels_.begin();
-      it != frequent_vertex_labels_.end(); ++it) {
-      std::stringstream ss;
+//    int graph_id = 0;
+//    for (auto it = frequent_vertex_labels_.begin();
+//      it != frequent_vertex_labels_.end(); ++it) {
+//      std::stringstream ss;
 
-      ss << "v 0 " + std::to_string(it->first);
-      ss << std::endl;
-      ss << "x: ";
-      for (auto i = 0; i < it->second.size(); ++i) {
-        ss << it->second[i] << " ";
-      }
-      ss << std::endl;
+//      ss << "v 0 " + std::to_string(it->first);
+//      ss << std::endl;
+//      ss << "x: ";
+//      for (auto i = 0; i < it->second.size(); ++i) {
+//        ss << it->second[i] << " ";
+//      }
+//      ss << std::endl;
 
-      output_frequent_nodes_->push_back(ss.str(), it->second.size(), graph_id++);
-    }
-    output_frequent_nodes_->save(false, true);
-  }
+//      output_frequent_nodes_->push_back(ss.str(), it->second.size(), graph_id++);
+//    }
+//    output_frequent_nodes_->save(false, true);
+//  }
+}
+
+bool GBolt::check_outliers(int nsupport, const Projection& projection) {
+	if (outliers_.size() == 0) { return true; }
+
+	size_t count = 0;
+	size_t prev = 0;
+	for (size_t i = 0; i < projection.size(); ++i) {
+		if (i == 0 || projection[i].id != prev) {
+			prev = projection[i].id;
+			if (outliers_[prev]) { continue; }
+			count += 1;
+			if (count > max_non_outlier_nsupport_) {
+				return false;
+			}
+		}
+	}
+	size_t outlier_count = nsupport - count;
+	return outlier_count >= min_outlier_support_;
+}
+
+bool GBolt::check_queue(int nsupport) {
+	if (max_ngraphs_ <= 0) { return true; }
+
+	bool is_valid = true;
+	#pragma omp critical
+	{
+		if (max_graphs_.size() < max_ngraphs_) {
+			max_graphs_.push(nsupport);
+		} else if (max_graphs_.top() >= nsupport) {
+			is_valid = false;
+		} else {
+			max_graphs_.pop();
+			max_graphs_.push(nsupport);
+		}
+	}
+	return is_valid;
 }
 
 void GBolt::mine_subgraph(
@@ -115,10 +152,23 @@ void GBolt::mine_subgraph(
   int prev_nsupport,
   int prev_thread_id,
   int prev_graph_id) {
-  if (!is_min(dfs_codes)) {
-    return;
+
+  if (dfs_codes.size() > max_num_edges_ || !check_outliers(prev_nsupport, projection)) {
+	return;
   }
-  report(dfs_codes, projection, prev_nsupport, prev_thread_id, prev_graph_id);
+  if (!is_min(dfs_codes)) {
+	return;
+  }
+
+  if (dfs_codes.size() >= min_num_edges_) {
+	  if (check_queue(prev_nsupport)) {
+		  report(dfs_codes, projection, prev_nsupport, prev_thread_id, prev_graph_id);
+	  } else {
+		  return;
+	  }
+  }
+
+//  report(dfs_codes, projection, prev_nsupport, prev_thread_id, prev_graph_id);
   #ifdef GBOLT_SERIAL
   prev_thread_id = 0;
   #else

@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <queue>
 
 namespace gbolt {
 
@@ -32,13 +33,32 @@ struct gbolt_instance_t {
 
 class GBolt {
  public:
-  GBolt(const string &output_file, double support) :
-    output_file_(output_file), support_(support),
+  GBolt(int nsupport) : nsupport_(nsupport),
+	min_num_edges_(0), max_num_edges_(10000),
     output_frequent_nodes_(0), gbolt_instances_(0) {}
 
-  void execute();
+  GBolt(int nsupport, int min_num_edges, int max_num_edges) :
+	nsupport_(nsupport),
+	min_num_edges_(min_num_edges), max_num_edges_(max_num_edges),
+	output_frequent_nodes_(0), gbolt_instances_(0) {}
 
-  void save(bool output_parent = false, bool output_pattern = false, bool output_frequent_nodes = false);
+  GBolt(int nsupport, int min_num_edges, int max_num_edges, size_t min_outlier_support,
+		  size_t max_non_outlier_nsupport, std::vector<bool> outliers,
+		size_t max_ngraphs = 0) :
+	nsupport_(nsupport),
+	min_num_edges_(min_num_edges), max_num_edges_(max_num_edges),
+	min_outlier_support_(min_outlier_support),
+	max_non_outlier_nsupport_(max_non_outlier_nsupport), outliers_(outliers),
+	max_ngraphs_(max_ngraphs),
+	output_frequent_nodes_(0), gbolt_instances_(0)
+  {}
+
+  void execute(const std::vector<Graph>& graphs);
+
+  void save(std::string output_file, bool output_parent = false,
+			bool output_pattern = false, bool output_frequent_nodes = false);
+
+  Output get_output();
 
   ~GBolt() {
     if (gbolt_instances_ != 0) {
@@ -62,6 +82,8 @@ class GBolt {
 
   void find_frequent_nodes_and_edges(const vector<Graph> &graphs);
 
+  bool check_outliers(int nsupport, const Projection& projection);
+  bool check_queue(int nsupport);
   void mine_subgraph(
     const vector<Graph> &graphs,
     const Projection &projection,
@@ -181,14 +203,20 @@ class GBolt {
   map<int, vector<int> > frequent_vertex_labels_;
   map<int, int> frequent_edge_labels_;
   #endif
-  string output_file_;
-  double support_;
   int nsupport_;
+
+  int min_num_edges_, max_num_edges_;
+  size_t min_outlier_support_, max_non_outlier_nsupport_;
+  std::vector<bool> outliers_;
+  size_t max_ngraphs_ = 0;
+  std::priority_queue <size_t, vector<size_t>, std::greater<size_t>> max_graphs_;
+
   Output *output_frequent_nodes_;
   gbolt_instance_t *gbolt_instances_;
   dfs_code_project_compare_t dfs_code_project_compare_;
   dfs_code_forward_compare_t dfs_code_forward_compare_;
   dfs_code_backward_compare_t dfs_code_backward_compare_;
+
 };
 
 }  // namespace gbolt
