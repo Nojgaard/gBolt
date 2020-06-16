@@ -49,7 +49,18 @@ set(SOURCES
   "${GBOLT_SOURCE_DIR}/gbolt_extend.cc"
   "${GBOLT_SOURCE_DIR}/gbolt_mine.cc")
 
+set(HEADERS
+  "${GBOLT_INCLUDE_DIR}/history.h"
+  "${GBOLT_INCLUDE_DIR}/database.h"
+  "${GBOLT_INCLUDE_DIR}/output.h"
+  "${GBOLT_INCLUDE_DIR}/gbolt_count.h"
+  "${GBOLT_INCLUDE_DIR}/gbolt_execute.h"
+  "${GBOLT_INCLUDE_DIR}/gbolt_extend.h"
+  "${GBOLT_INCLUDE_DIR}/gbolt_mine.h")
+
 add_library(libgbolt SHARED ${SOURCES} )
+
+target_include_directories(libgbolt PRIVATE ${GBOLT_INCLUDE_DIR})
 
 # add the executable
 add_executable(gbolt  "${GBOLT_SOURCE_DIR}/gbolt.cc" )
@@ -61,3 +72,10 @@ if (JEMALLOC)
   TARGET_LINK_LIBRARIES(gbolt ${JEMALLOC})
 endif()
 
+
+install(TARGETS libgbolt
+	EXPORT PROJECT_exports
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/gbolt COMPONENT gbolt_lib
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/gbolt COMPONENT gbolt_lib
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     COMPONENT gbolt_lib
+	)
