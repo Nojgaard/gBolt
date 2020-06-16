@@ -16,6 +16,28 @@ class Output {
     return support_.size();
   }
 
+  int support(size_t idx) { return support_[idx]; }
+  int thread_id(size_t idx) { return thread_id_[idx]; }
+  int parent_id(size_t idx) { return parent_id_[idx]; }
+  int graph_id(size_t idx) { return graph_id_[idx]; }
+
+  vector<size_t> support_vector(size_t idx) {
+	  vector<size_t> out;
+	  const Projection& projection = projections_[idx];
+	  int prev = 0;
+	  for (auto i = 0; i < projection.size(); ++i) {
+		if (i == 0 || projection[i].id != prev) {
+		  prev = projection[i].id;
+		  out.push_back(prev);
+		}
+	  }
+	  return out;
+  }
+
+  const Graph& graph(size_t idx) {
+	  return graphs_[idx];
+  }
+
   void push_back(const Output& out);
 
   void push_back(const DfsCodes& dfs_code, const Graph& graph, const Projection& projection,
