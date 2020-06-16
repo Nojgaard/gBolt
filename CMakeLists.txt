@@ -44,14 +44,17 @@ set(SOURCES
   "${GBOLT_SOURCE_DIR}/history.cc"
   "${GBOLT_SOURCE_DIR}/database.cc"
   "${GBOLT_SOURCE_DIR}/output.cc"
-  "${GBOLT_SOURCE_DIR}/gbolt.cc"
   "${GBOLT_SOURCE_DIR}/gbolt_count.cc"
   "${GBOLT_SOURCE_DIR}/gbolt_execute.cc"
   "${GBOLT_SOURCE_DIR}/gbolt_extend.cc"
   "${GBOLT_SOURCE_DIR}/gbolt_mine.cc")
- 
+
+add_library(libgbolt SHARED ${SOURCES} )
+
 # add the executable
-add_executable(gbolt ${SOURCES})
+add_executable(gbolt  "${GBOLT_SOURCE_DIR}/gbolt.cc" )
+
+target_link_libraries(gbolt libgbolt)
 
 find_library(JEMALLOC NAMES jemalloc PATHS ${JEMALLOC_DIR} PATH_SUFFIXES lib NO_DEFAULT_PATH)
 if (JEMALLOC)
