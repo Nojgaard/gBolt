@@ -60,7 +60,7 @@ set(HEADERS
 
 add_library(libgbolt SHARED ${SOURCES} )
 
-target_include_directories(libgbolt PRIVATE ${GBOLT_INCLUDE_DIR})
+target_include_directories(libgbolt PUBLIC ${GBOLT_INCLUDE_DIR})
 
 # add the executable
 add_executable(gbolt  "${GBOLT_SOURCE_DIR}/gbolt.cc" )
