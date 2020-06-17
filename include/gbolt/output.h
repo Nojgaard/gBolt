@@ -16,12 +16,12 @@ class Output {
     return support_.size();
   }
 
-  int support(size_t idx) { return support_[idx]; }
-  int thread_id(size_t idx) { return thread_id_[idx]; }
-  int parent_id(size_t idx) { return parent_id_[idx]; }
-  int graph_id(size_t idx) { return graph_id_[idx]; }
+  int support(size_t idx) const { return support_[idx]; }
+  int thread_id(size_t idx) const { return thread_id_[idx]; }
+  int parent_id(size_t idx) const { return parent_id_[idx]; }
+  int graph_id(size_t idx) const { return graph_id_[idx]; }
 
-  vector<size_t> support_vector(size_t idx) {
+  vector<size_t> support_vector(size_t idx) const {
 	  vector<size_t> out;
 	  const Projection& projection = projections_[idx];
 	  int prev = 0;
@@ -34,7 +34,7 @@ class Output {
 	  return out;
   }
 
-  const Graph& graph(size_t idx) {
+  const Graph& graph(size_t idx) const {
 	  return graphs_[idx];
   }
 
@@ -61,7 +61,7 @@ class Output {
 
   vector<Projection> projections_;
   vector<Graph> graphs_;
-  vector<DfsCodesLocal> dfs_codes_;
+//  vector<DfsCodesLocal> dfs_codes_;
 };
 
 }  // namespace gbolt

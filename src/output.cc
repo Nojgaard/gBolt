@@ -5,19 +5,25 @@
 
 namespace gbolt {
 
-std::string graph_to_str(const Graph& graph, const DfsCodesLocal& dfs_codes, const Projection& projection) {
+std::string graph_to_str(const Graph& graph, const Projection& projection) {
   std::stringstream ss;
   for (auto i = 0; i < graph.size(); ++i) {
 	const vertex_t *vertex = graph.get_p_vertex(i);
 	ss << "v " << vertex->id << " " << vertex->label << std::endl;
+
+	for (const auto& e : vertex->edges) {
+		if (e.to > e.from) { continue; }
+		ss << "e " << e.from << " " << e.to
+		  << " " << e.label << std::endl;
+	}
   }
-  for (auto i = 0; i < dfs_codes.size(); ++i) {
-	  if (dfs_codes[i].to > 20) {
-		  std::cout << "WAIT " << dfs_codes[i].to << std::endl;
-	  }
-	ss << "e " << dfs_codes[i].from << " " << dfs_codes[i].to
-	  << " " << dfs_codes[i].edge_label << std::endl;
-  }
+//  for (auto i = 0; i < dfs_codes.size(); ++i) {
+//	  if (dfs_codes[i].to > 20) {
+//		  std::cout << "WAIT " << dfs_codes[i].to << std::endl;
+//	  }
+//	ss << "e " << dfs_codes[i].from << " " << dfs_codes[i].to
+//	  << " " << dfs_codes[i].edge_label << std::endl;
+//  }
   ss << "x: ";
   int prev = 0;
   for (auto i = 0; i < projection.size(); ++i) {
@@ -35,10 +41,10 @@ void Output::push_back(const DfsCodes& dfs_code, const Graph& graph, const Proje
 
   support_.push_back(nsupport);
   graph_id_.push_back(graph_id);
-  dfs_codes_.emplace_back();
-  for (const dfs_code_t* dc : dfs_code) {
-	  dfs_codes_.back().emplace_back(*dc);
-  }
+//  dfs_codes_.emplace_back();
+//  for (const dfs_code_t* dc : dfs_code) {
+//	  dfs_codes_.back().emplace_back(*dc);
+//  }
   graphs_.push_back(graph);
   projections_.push_back(projection);
 }
@@ -65,13 +71,15 @@ void Output::push_back(const string &str, int nsupport, int graph_id, int thread
 }
 
 void Output::push_back(const Output& out) {
+	size_t parent_id_offset = out.parent_id_.size();
 	for (size_t i = 0; i < out.size(); ++i) {
 	  support_.push_back(out.support_[i]);
 	  graph_id_.push_back(this->size());
-	  dfs_codes_.push_back(out.dfs_codes_[i]);
+//	  dfs_codes_.push_back(out.dfs_codes_[i]);
 	  graphs_.push_back(out.graphs_[i]);
 	  projections_.push_back(out.projections_[i]);
 	  thread_id_.push_back(out.thread_id_[i]);
+	  parent_id_.push_back(out.parent_id_[i] + parent_id_offset);
 	}
 }
 
@@ -87,7 +95,7 @@ void Output::save(std::string output_file, bool output_parent, bool output_patte
         out << "parent : " << parent_id_[i] << " thread : " << thread_id_[i] << std::endl;
     }
     if (output_pattern == true) {
-	  out << graph_to_str(graphs_[i], dfs_codes_[i], projections_[i]) << std::endl;
+	  out << graph_to_str(graphs_[i], projections_[i]) << std::endl;
     }
   }
   out.close();

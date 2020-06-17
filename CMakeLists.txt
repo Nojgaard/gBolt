@@ -78,6 +78,7 @@ target_include_directories(gbolt
 	PRIVATE
 	${CXXOPTS_INCLUDE_DIR})
 
+
 target_link_libraries(gbolt libgbolt)
 
 find_library(JEMALLOC NAMES jemalloc PATHS ${JEMALLOC_DIR} PATH_SUFFIXES lib NO_DEFAULT_PATH)
@@ -85,11 +86,12 @@ if (JEMALLOC)
   TARGET_LINK_LIBRARIES(gbolt ${JEMALLOC})
 endif()
 
+set_target_properties(libgbolt PROPERTIES OUTPUT_NAME "gbolt")
 
 install(TARGETS libgbolt
 	EXPORT PROJECT_exports
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/gbolt COMPONENT gbolt_lib
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/gbolt COMPONENT gbolt_lib
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT gbolt_lib
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT gbolt_lib
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     COMPONENT gbolt_lib
 	)
 
