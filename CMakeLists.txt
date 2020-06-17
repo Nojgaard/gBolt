@@ -34,10 +34,12 @@ configure_file(
  
 # add the binary tree to the search path for include files
 # so that we will find TutorialConfig.h
-set(GBOLT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-set(CXXOPTS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/extern/cxxopts/include")
+set(GBOLT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include"
+	CACHE INTERNAL "${PROJECT_NAME}: Include Directories" FORCE)
+set(CXXOPTS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/extern/cxxopts/include"
+	CACHE INTERNAL "${PROJECT_NAME} exec: Include Directories" FORCE)
 
-INCLUDE_DIRECTORIES(${GBOLT_INCLUDE_DIR} ${CXXOPTS_INCLUDE_DIR})
+#INCLUDE_DIRECTORIES(${GBOLT_INCLUDE_DIR} ${CXXOPTS_INCLUDE_DIR})
 
 set(GBOLT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 set(SOURCES
@@ -60,10 +62,22 @@ set(HEADERS
 
 add_library(libgbolt SHARED ${SOURCES} )
 
-target_include_directories(libgbolt PUBLIC ${GBOLT_INCLUDE_DIR})
+#target_include_directories(libgbolt PUBLIC ${GBOLT_INCLUDE_DIR})
+
+target_include_directories(libgbolt
+		PUBLIC
+		${GBOLT_INCLUDE_DIR}
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>)
+
+
 
 # add the executable
 add_executable(gbolt  "${GBOLT_SOURCE_DIR}/gbolt.cc" )
+target_include_directories(gbolt
+	PRIVATE
+	${CXXOPTS_INCLUDE_DIR})
 
 target_link_libraries(gbolt libgbolt)
 
@@ -79,3 +93,8 @@ install(TARGETS libgbolt
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/gbolt COMPONENT gbolt_lib
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     COMPONENT gbolt_lib
 	)
+
+install(DIRECTORY include
+		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+		COMPONENT gbolt_dev
+		FILES_MATCHING PATTERN "*.hpp")
