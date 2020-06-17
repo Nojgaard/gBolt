@@ -1,7 +1,7 @@
-#include <gbolt.h>
-#include <history.h>
-#include <path.h>
-#include <common.h>
+#include <gbolt/gbolt.h>
+#include <gbolt/history.h>
+#include <gbolt/path.h>
+#include <gbolt/common.h>
 
 namespace gbolt {
 

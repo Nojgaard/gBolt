@@ -1,6 +1,6 @@
-#include <gbolt.h>
-#include <database.h>
-#include <common.h>
+#include <gbolt/gbolt.h>
+#include <gbolt/database.h>
+#include <gbolt/common.h>
 #include <algorithm>
 
 namespace gbolt {

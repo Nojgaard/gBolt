@@ -1,6 +1,6 @@
-#include <gbolt.h>
-#include <history.h>
-#include <path.h>
+#include <gbolt/gbolt.h>
+#include <gbolt/history.h>
+#include <gbolt/path.h>
 #include <algorithm>
 
 

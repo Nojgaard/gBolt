@@ -1,8 +1,8 @@
 #ifndef INCLUDE_HISTORY_H_
 #define INCLUDE_HISTORY_H_
 
-#include <common.h>
-#include <graph.h>
+#include <gbolt/common.h>
+#include <gbolt/graph.h>
 
 namespace gbolt {
 

@@ -1,8 +1,8 @@
-#include <gbolt.h>
-#include <output.h>
-#include <graph.h>
-#include <database.h>
-#include <common.h>
+#include <gbolt/gbolt.h>
+#include <gbolt/output.h>
+#include <gbolt/graph.h>
+#include <gbolt/database.h>
+#include <gbolt/common.h>
 #include <cxxopts.hpp>
 
 // Initialize instance

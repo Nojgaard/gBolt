@@ -1,7 +1,7 @@
-#include <gbolt.h>
-#include <graph.h>
-#include <path.h>
-#include <common.h>
+#include <gbolt/gbolt.h>
+#include <gbolt/graph.h>
+#include <gbolt/path.h>
+#include <gbolt/common.h>
 #include <sstream>
 #include <iostream>
 

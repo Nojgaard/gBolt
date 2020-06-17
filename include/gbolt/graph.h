@@ -1,8 +1,8 @@
 #ifndef INCLUDE_GRAPH_H_
 #define INCLUDE_GRAPH_H_
 
-#include <common.h>
-#include <path.h>
+#include <gbolt/common.h>
+#include <gbolt/path.h>
 #include <vector>
 
 namespace gbolt {

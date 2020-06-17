@@ -1,6 +1,6 @@
-#include <database.h>
-#include <graph.h>
-#include <common.h>
+#include <gbolt/database.h>
+#include <gbolt/graph.h>
+#include <gbolt/common.h>
 #include <fstream>
 #include <cstdlib>
 #include <cstring>

@@ -1,5 +1,5 @@
-#include <history.h>
-#include <graph.h>
+#include <gbolt/history.h>
+#include <gbolt/graph.h>
 #include <algorithm>
 #include <cstring>
 

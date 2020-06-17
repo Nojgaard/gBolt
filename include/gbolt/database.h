@@ -1,7 +1,7 @@
 #ifndef INCLUDE_DATABASE_H_
 #define INCLUDE_DATABASE_H_
 
-#include <common.h>
+#include <gbolt/common.h>
 #include <vector>
 #include <string>
 

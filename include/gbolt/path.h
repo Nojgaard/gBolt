@@ -1,6 +1,8 @@
 #ifndef INCLUDE_PATH_H_
 #define INCLUDE_PATH_H_
 
+#include <stddef.h>
+
 namespace gbolt {
 
 template <typename T>

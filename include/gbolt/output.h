@@ -1,10 +1,10 @@
 #ifndef INCLUDE_OUTPUT_H_
 #define INCLUDE_OUTPUT_H_
 
-#include <common.h>
+#include <gbolt/common.h>
 #include <vector>
 #include <string>
-#include <graph.h>
+#include <gbolt/graph.h>
 
 namespace gbolt {
 

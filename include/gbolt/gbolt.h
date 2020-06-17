@@ -1,11 +1,11 @@
 #ifndef INCLUDE_GBOLT_H_
 #define INCLUDE_GBOLT_H_
 
-#include <common.h>
-#include <graph.h>
-#include <history.h>
-#include <path.h>
-#include <output.h>
+#include <gbolt/common.h>
+#include <gbolt/graph.h>
+#include <gbolt/history.h>
+#include <gbolt/path.h>
+#include <gbolt/output.h>
 #include <map>
 #include <vector>
 #include <string>
