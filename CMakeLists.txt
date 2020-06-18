@@ -4,7 +4,7 @@ project (gbolt)
 set(GBOLT_VERSION_MAJOR 1)
 set(GBOLT_VERSION_MINOR 0)
 
-option(GBOLT_PERFORMANCE "Performance Mode" ON)
+option(GBOLT_PERFORMANCE "Performance Mode" OFF)
 option(GBOLT_SERIAL "Serial Mode" OFF)
 if(GBOLT_PERFORMANCE)
   add_definitions(-DGBOLT_PERFORMANCE)
