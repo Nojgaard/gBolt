@@ -8,9 +8,8 @@ namespace gbolt {
 template <typename T>
 class Path {
  public:
-  Path(size_t capacity = 1) : capacity_(capacity), index_(0) {
-    entries_ = new T[capacity_]();
-  }
+  Path(size_t capacity = 1)
+  : entries_(new T[capacity]()), index_(0), capacity_(capacity) {}
 
   void push_back(T &value) {
     entries_[index_++] = value;

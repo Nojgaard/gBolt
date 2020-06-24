@@ -25,7 +25,7 @@ class Output {
 	  vector<size_t> out;
 	  const Projection& projection = projections_[idx];
 	  int prev = 0;
-	  for (auto i = 0; i < projection.size(); ++i) {
+	  for (std::size_t i = 0; i < projection.size(); ++i) {
 		if (i == 0 || projection[i].id != prev) {
 		  prev = projection[i].id;
 		  out.push_back(prev);

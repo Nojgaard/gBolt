@@ -46,6 +46,11 @@ else()
 	endif()
 endif()
 
+target_compile_options(libgbolt PRIVATE -Wall -Wextra
+		-Wno-sign-compare
+		-Wno-unused-parameter
+		-Wno-unused-variable)
+
 target_include_directories(libgbolt
 		PUBLIC
 		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
