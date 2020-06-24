@@ -5,7 +5,6 @@
 #ifndef GBOLT_SERIAL
 #include <omp.h>
 #endif
-#include <config.h>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
@@ -35,7 +34,7 @@
   do { \
     struct timeval cur; \
     gettimeofday(&cur, NULL); \
-    fprintf(stdout, "[%d:%d] ", cur.tv_sec, cur.tv_usec); \
+    fprintf(stdout, "[%ld:%ld] ", cur.tv_sec, cur.tv_usec); \
     fprintf(stdout, "INFO: "); \
     fprintf(stdout, __VA_ARGS__); \
     fprintf(stdout, "\n"); \
@@ -45,7 +44,7 @@
   do { \
     struct timeval cur; \
     gettimeofday(&cur, NULL); \
-    fprintf(stdout, "[%d:%d] ", cur.tv_sec, cur.tv_usec); \
+    fprintf(stdout, "[%ld:%ld] ", cur.tv_sec, cur.tv_usec); \
     fprintf(stderr, "ERROR: "); \
     fprintf(stderr, __VA_ARGS__); \
     fprintf(stderr, "\n"); \
@@ -55,7 +54,7 @@
   do { \
     struct timeval cur; \
     gettimeofday(&cur, NULL); \
-    fprintf(stdout, "[%f:%f] ", cur.tv_sec, cur.tv_usec); \
+    fprintf(stdout, "[%ld:%ld] ", cur.tv_sec, cur.tv_usec); \
     fprintf(stderr, "ERROR: "); \
     fprintf(stderr, __VA_ARGS__); \
     fprintf(stderr, "\n"); \
