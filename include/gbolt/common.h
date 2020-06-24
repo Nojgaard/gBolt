@@ -5,7 +5,6 @@
 #ifndef GBOLT_SERIAL
 #include <omp.h>
 #endif
-#include <config.h>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
