@@ -54,14 +54,6 @@ struct dfs_code_t {
     from(from), to(to),
     from_label(from_label), edge_label(edge_label), to_label(to_label) {}
 
-  dfs_code_t(const dfs_code_t &other) {
-    this->from = other.from;
-    this->to = other.to;
-    this->from_label = other.from_label;
-    this->edge_label = other.edge_label;
-    this->to_label = other.to_label;
-  }
-
   bool operator != (const dfs_code_t &t) const {
     return (from != t.from) || (to != t.to) ||
       (from_label != t.from_label) || (edge_label != t.edge_label) ||
@@ -98,7 +90,7 @@ struct dfs_code_project_compare_t {
 };
 
 struct dfs_code_backward_compare_t {
-  bool operator() (const dfs_code_t &first, const dfs_code_t &second) {
+  bool operator() (const dfs_code_t &first, const dfs_code_t &second) const {
     if (first.to != second.to) {
       return first.to < second.to;
     } else {
@@ -108,7 +100,7 @@ struct dfs_code_backward_compare_t {
 };
 
 struct dfs_code_forward_compare_t {
-  bool operator() (const dfs_code_t &first, const dfs_code_t &second) {
+  bool operator() (const dfs_code_t &first, const dfs_code_t &second) const {
     if (first.from != second.from) {
       return first.from > second.from;
     } else {
